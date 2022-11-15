@@ -4,28 +4,56 @@ import Announcement from "../component/Announcement";
 import Footer from "../component/Footer";
 import Navbar from "../component/Navbar";
 import Newstitle from "../component/Newstitle";
-
-
+import { useParams } from "react-router-dom";
+import {useState, useEffect} from "react";
+import {addProduct} from "redux/cartRedux";
+import { useDispatch } from "react-redux";
+import axios from 'axios';
 
 function Product(){
+
+  const { id } = useParams();
+    const [product, setProduct] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [quality, setQuanlity] = useState(1)
+    const dispatch = useDispatch()
+    useEffect(() => {
+        const getProduct = async () => {
+            setLoading(true);
+            const response = await axios (`https://fakestoreapi.com/products/${id}`);
+            const data = await response.data;
+            setProduct(data);
+            setLoading(false);
+        }
+        getProduct();
+    }, [id]);
+    // console.log('product', product);
+    const handleQuanlity = (type) => {
+      if(type === "dec") {
+       quality > 1 && setQuanlity(quality - 1)
+      } else {setQuanlity(quality+1)}
+    }
+    const handleClick = () => {
+      // Update cart
+      dispatch(
+        addProduct(
+          {product, 
+            quality}
+          )
+        )  
+    }
   return (
     <Container>
       <Navbar />
       <Announcement />
       <Wrapper>
         <ImgContainer>
-          <Image src="https://i.ibb.co/S6qMxwr/jean.jpg" />
+          <Image src={product.image} />
         </ImgContainer>
         <InfoContainer>
-          <Title>Denim Jumpsuit</Title>
-          <Desc>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec
-            venenatis, dolor in finibus malesuada, lectus ipsum porta nunc, at
-            iaculis arcu nisi sed mauris. Nulla fermentum vestibulum ex, eget
-            tristique tortor pretium ut. Curabitur elit justo, consequat id
-            condimentum ac, volutpat ornare.
-          </Desc>
-          <Price>$ 20</Price>
+          <Title>{product.title}</Title>
+          <Desc>{product.description}</Desc>
+          <Price>$ {product.price}</Price>
           <FilterContainer>
             <Filter>
               <FilterTitle>Color</FilterTitle>
@@ -46,11 +74,11 @@ function Product(){
           </FilterContainer>
           <AddContainer>
             <AmountContainer>
-              <Remove />
-              <Amount>1</Amount>
-              <Add />
+              <Remove onClick = {() => handleQuanlity("dec")}/>
+              <Amount>{quality}</Amount>
+              <Add onClick = {() => handleQuanlity("inc")}/>
             </AmountContainer>
-            <Button>ADD TO CART</Button>
+            <Button onClick= {handleClick}>ADD TO CART</Button>
           </AddContainer>
         </InfoContainer>
       </Wrapper>
@@ -74,8 +102,8 @@ const ImgContainer = styled.div`
 `;
 
 const Image = styled.img`
-  width: 100%;
-  height: 90vh;
+  width: 80%;
+  height: 80vh;
   object-fit: cover;
 `;
 

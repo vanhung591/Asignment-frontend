@@ -1,12 +1,36 @@
-import React from 'react'
+import axios from 'axios';
+import React, {useEffect, useState}from 'react'
 import styled from "styled-components";
 import {popularProducts} from '../data'
-import Product from './Product'
+import Product from './Product';
+
 function Products() {
+  
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [filter, setFilter] = useState(data);
+
+  useEffect(() => {
+      let componentMounted = true;
+      const getProdcuts = async () => {
+          setLoading(true);
+          const response = await axios ('https://fakestoreapi.com/products');
+          if (componentMounted) {
+              const data = response.data;
+              setData(data);
+              setFilter(data);
+              setLoading(false);
+          }
+          return () => {
+              componentMounted = false;
+          }
+      }
+      getProdcuts();
+  }, []);
   return (
     <Container>
-       {popularProducts.map(item=>(
-            <Product item= {item} key = {item.id}/>
+       {filter.map(data=>(
+            <Product data= {data} key = {data.id}/>
        ))}
     </Container>
   )

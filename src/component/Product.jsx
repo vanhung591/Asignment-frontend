@@ -4,18 +4,21 @@ import {
     ShoppingCartOutlined,
   } from "@mui/icons-material";
   import styled from "styled-components";
-
-  function Product({ item }) { 
+  import {Link} from "react-router-dom"
+  function Product({ data }) { 
+    // console.log('item', data);
     return (
       <Container>
         <Circle />
-        <Image src={item.img} />
+        <Image src={data.image}/>
         <Info>
           <Icon>
             <ShoppingCartOutlined />
           </Icon>
           <Icon>
+          <Link to={`/product/${data.id}`}>
             <SearchOutlined />
+            </Link>
           </Icon>
           <Icon>
             <FavoriteBorderOutlined />
@@ -69,7 +72,7 @@ import {
   `;
   
   const Image = styled.img`
-    height: 75%;
+    height: 50%;
     z-index: 2;
   `;
   
